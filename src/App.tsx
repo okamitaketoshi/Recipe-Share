@@ -19,13 +19,9 @@ function App() {
 
     const channel = supabase
       .channel('recipes-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'recipes' },
-        () => {
-          fetchRecipes();
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, () => {
+        fetchRecipes();
+      })
       .subscribe();
 
     return () => {
@@ -130,9 +126,7 @@ function App() {
   const filteredRecipes = ingredientSearch.trim()
     ? filterRecipesByIngredients(
         recipes,
-        ingredientSearch
-          .split(/\s+/)
-          .filter((term) => term.length > 0),
+        ingredientSearch.split(/\s+/).filter((term) => term.length > 0),
         searchMode
       )
     : recipes;
@@ -144,9 +138,7 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <ChefHat className="text-orange-600" size={32} />
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-                みんなのレシピ
-              </h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">みんなのレシピ</h1>
             </div>
             <button
               onClick={() => setShowForm(true)}
@@ -177,12 +169,8 @@ function App() {
         ) : recipes.length === 0 ? (
           <div className="text-center py-20">
             <ChefHat className="mx-auto text-gray-400 mb-4" size={64} />
-            <p className="text-xl text-gray-600 mb-4">
-              まだレシピがありません
-            </p>
-            <p className="text-gray-500 mb-6">
-              最初のレシピを投稿してみましょう！
-            </p>
+            <p className="text-xl text-gray-600 mb-4">まだレシピがありません</p>
+            <p className="text-gray-500 mb-6">最初のレシピを投稿してみましょう！</p>
             <button
               onClick={() => setShowForm(true)}
               className="inline-flex items-center gap-2 bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors"
@@ -194,12 +182,8 @@ function App() {
         ) : filteredRecipes.length === 0 ? (
           <div className="text-center py-20">
             <ChefHat className="mx-auto text-gray-400 mb-4" size={64} />
-            <p className="text-xl text-gray-600 mb-4">
-              その材料で作れるレシピはまだありません
-            </p>
-            <p className="text-gray-500 mb-6">
-              新しく投稿しませんか？
-            </p>
+            <p className="text-xl text-gray-600 mb-4">その材料で作れるレシピはまだありません</p>
+            <p className="text-gray-500 mb-6">新しく投稿しませんか？</p>
             <button
               onClick={() => setShowForm(true)}
               className="inline-flex items-center gap-2 bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors"

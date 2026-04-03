@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+*.local
+.git
+.vscode
+.idea
+.DS_Store
+build
+coverage
+*.log
+package-lock.json

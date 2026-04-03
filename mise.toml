@@ -1,0 +1,45 @@
+# mise configuration
+# https://mise.jdx.dev/configuration.html
+
+[tasks."pre-commit:check"]
+description = "コミット前チェック: TypeScript型チェック、ESLint、Prettier、機密情報チェック"
+run = """
+set -e
+
+echo "🚀 pre-commitチェック開始..."
+echo ""
+
+# 1. TypeScript型チェック
+echo "📝 [1/4] TypeScript型チェック..."
+npm run typecheck
+echo "✅ TypeScript型チェック完了"
+echo ""
+
+# 2. ESLint自動修正 + チェック
+echo "🔍 [2/4] ESLint自動修正 + チェック..."
+npm run lint -- --fix
+echo "✅ ESLint完了"
+echo ""
+
+# 3. Prettier自動整形 + チェック
+echo "💅 [3/4] Prettier自動整形..."
+npm run format
+echo "✅ Prettier完了"
+echo ""
+
+# 4. 機密情報チェック
+echo "🔒 [4/4] 機密情報チェック..."
+./scripts/check-secrets.sh
+echo ""
+
+echo "✨ すべてのチェックが完了しました！"
+"""
+
+[tasks."pre-commit:check:quick"]
+description = "高速版: TypeScript型チェックとESLintのみ"
+run = """
+set -e
+echo "⚡ 高速チェック開始..."
+npm run typecheck && npm run lint
+echo "✅ 高速チェック完了"
+"""
