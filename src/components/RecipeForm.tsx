@@ -16,7 +16,9 @@ interface RecipeFormProps {
 export function RecipeForm({ recipe, onSubmit, onClose }: RecipeFormProps) {
   const [title, setTitle] = useState(recipe?.title || '');
   const [ingredients, setIngredients] = useState<string[]>(recipe?.ingredients || ['']);
-  const [steps, setSteps] = useState<string[]>(recipe?.steps_array && recipe.steps_array.length > 0 ? recipe.steps_array : ['']);
+  const [steps, setSteps] = useState<string[]>(
+    recipe?.steps_array && recipe.steps_array.length > 0 ? recipe.steps_array : ['']
+  );
   const [recipeUrl, setRecipeUrl] = useState(recipe?.recipe_url || '');
 
   useEffect(() => {
@@ -62,8 +64,8 @@ export function RecipeForm({ recipe, onSubmit, onClose }: RecipeFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const filteredIngredients = ingredients.filter(i => i.trim() !== '');
-    const filteredSteps = steps.filter(s => s.trim() !== '');
+    const filteredIngredients = ingredients.filter((i) => i.trim() !== '');
+    const filteredSteps = steps.filter((s) => s.trim() !== '');
     if (title.trim() && filteredIngredients.length > 0 && filteredSteps.length > 0) {
       onSubmit({
         title,
@@ -121,9 +123,7 @@ export function RecipeForm({ recipe, onSubmit, onClose }: RecipeFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              材料
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">材料</label>
             <div className="space-y-2">
               {ingredients.map((ingredient, index) => (
                 <div key={index} className="flex gap-2">
@@ -158,9 +158,7 @@ export function RecipeForm({ recipe, onSubmit, onClose }: RecipeFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              作り方
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">作り方</label>
             <div className="space-y-2">
               {steps.map((step, index) => (
                 <div key={index} className="flex gap-2">

@@ -1,3 +1,5 @@
+import { Recipe } from './supabase';
+
 export function normalizeString(str: string): string {
   return str
     .toLowerCase()
@@ -13,24 +15,26 @@ export function matchIngredient(searchTerm: string, ingredient: string): boolean
 }
 
 export function filterRecipesByIngredients(
-  recipes: any[],
+  recipes: Recipe[],
   ingredientSearchTerms: string[],
   searchMode: 'and' | 'or' = 'or'
-): any[] {
+): Recipe[] {
   if (ingredientSearchTerms.length === 0) {
     return recipes;
   }
 
   return recipes.filter((recipe) => {
-    const recipeIngredients = recipe.ingredients.map(normalizeString);
+    const recipeIngredients = recipe.ingredients.map((ingredient: string) =>
+      normalizeString(ingredient)
+    );
 
     if (searchMode === 'and') {
       return ingredientSearchTerms.every((term) =>
-        recipeIngredients.some((ingredient) => ingredient.includes(normalizeString(term)))
+        recipeIngredients.some((ingredient: string) => ingredient.includes(normalizeString(term)))
       );
     } else {
       return ingredientSearchTerms.some((term) =>
-        recipeIngredients.some((ingredient) => ingredient.includes(normalizeString(term)))
+        recipeIngredients.some((ingredient: string) => ingredient.includes(normalizeString(term)))
       );
     }
   });

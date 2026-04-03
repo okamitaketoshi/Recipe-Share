@@ -23,6 +23,8 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      // 設定エラーを回避するため無効化
+      '@typescript-eslint/no-unused-expressions': 'off',
     },
   }
 );
