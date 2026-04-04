@@ -43,3 +43,27 @@ echo "⚡ 高速チェック開始..."
 npm run typecheck && npm run lint
 echo "✅ 高速チェック完了"
 """
+
+[tasks."db:start"]
+description = "ローカルSupabase環境起動"
+run = "npx supabase start"
+
+[tasks."db:stop"]
+description = "ローカルSupabase環境停止"
+run = "npx supabase stop"
+
+[tasks."db:status"]
+description = "ローカルSupabase環境の状態確認"
+run = "npx supabase status"
+
+[tasks."db:reset"]
+description = "ローカルDBリセット（データ削除 + マイグレーション再適用）"
+run = "npx supabase db reset"
+
+[tasks."db:psql"]
+description = "ローカルDBに接続（psqlシェル起動）"
+run = "psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'"
+
+[tasks."db:studio"]
+description = "Supabase Studio起動（ブラウザベースのDB管理UI）"
+run = "open http://localhost:54323"

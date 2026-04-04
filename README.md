@@ -148,9 +148,133 @@ type Recipe = {
 - 環境変数からURL・APIキー取得
 - Recipe型定義のエクスポート
 
+## 🐳 ローカル開発環境（Supabase CLI）
+
+### セットアップ手順
+
+#### 1. Supabase CLIインストール
+
+**Homebrewでインストール（推奨）**:
+
+```bash
+brew install supabase/tap/supabase
+```
+
+**またはnpx経由で使用（インストール不要）**:
+
+```bash
+npx supabase --version
+```
+
+#### 2. ローカルDB環境設定
+
+`.env.local.example` をコピーして `.env.local` を作成：
+
+```bash
+cp .env.local.example .env.local
+```
+
+#### 3. Supabaseローカル環境起動
+
+```bash
+mise run db:start
+# または
+npx supabase start
+```
+
+**初回起動時の注意**:
+
+- Dockerイメージのダウンロードに数分かかります
+- PostgreSQL, PostgREST, GoTrue, Storage, Realtime などのコンテナが起動します
+
+起動完了後、以下のエンドポイントが利用可能になります：
+
+- **Supabase API**: http://localhost:54321
+- **Supabase Studio**: http://localhost:54323（ブラウザベースのDB管理UI）
+- **PostgreSQL**: localhost:5432
+
+#### 4. DB接続確認
+
+```bash
+mise run db:psql
+```
+
+psqlシェルが起動したら `\dt` でテーブル一覧を確認。
+
+#### 5. 開発サーバー起動
+
+```bash
+npm run dev
+```
+
+ブラウザで http://localhost:5173 にアクセスし、レシピCRUD機能が動作するか確認。
+
+### DB管理コマンド
+
+| コマンド             | 説明                                    |
+| -------------------- | --------------------------------------- |
+| `mise run db:start`  | ローカルSupabase環境起動                |
+| `mise run db:stop`   | ローカルSupabase環境停止                |
+| `mise run db:status` | 環境の状態確認（エンドポイントURL表示） |
+| `mise run db:reset`  | データ削除 + マイグレーション再適用     |
+| `mise run db:psql`   | psqlシェル起動（DB接続確認）            |
+| `mise run db:studio` | Supabase Studio起動（ブラウザで管理UI） |
+
+### Supabase Studioの使い方
+
+http://localhost:54323 にアクセスすると、ブラウザベースのDB管理UIが開きます。
+
+**できること**:
+
+- テーブル構造の確認・編集
+- データの閲覧・追加・更新・削除
+- SQLクエリの実行
+- RLSポリシーの管理
+- マイグレーション履歴の確認
+
+### 環境切り替え
+
+- **ローカルDB使用**: `.env.local` が存在する状態
+- **Supabase本番使用**: `.env.local` を削除または `.env.local.backup` にリネーム
+
+### トラブルシューティング
+
+#### ポート競合エラー
+
+```bash
+# 既存のプロセスを確認
+lsof -i :54321
+lsof -i :5432
+
+# Supabase環境を停止
+mise run db:stop
+
+# Dockerコンテナを確認
+docker ps
+```
+
+#### マイグレーションが適用されていない
+
+```bash
+# DBをリセットして再起動
+mise run db:reset
+
+# ステータス確認
+mise run db:status
+```
+
+#### Docker Desktopが起動していない
+
+Supabase CLIはDockerを使用するため、Docker Desktopが起動している必要があります。
+
+```bash
+# Dockerが起動しているか確認
+docker ps
+```
+
 ## 開発ワークフロー
 
-### セットアップ
+### セットアップ（Supabase本番環境使用の場合）
 
 ```bash
 # 依存関係のインストール
@@ -182,7 +306,22 @@ npm run preview
 
 ### データベースマイグレーション
 
-Supabaseダッシュボードまたはローカル環境で以下のマイグレーションを実行：
+#### ローカル環境（Supabase CLI）
+
+ローカルSupabase起動時に、`supabase/migrations/` 内のマイグレーションファイルが自動的に適用されます：
+
+1. `20260310143236_create_recipes_table.sql` - recipesテーブル作成・RLS設定
+2. `20260311065834_add_steps_and_url_to_recipes.sql` - steps_array・recipe_url追加
+
+マイグレーションのステータスを確認する場合：
+
+```bash
+mise run db:status
+```
+
+#### Supabase本番環境
+
+Supabaseダッシュボードで上記のマイグレーションを実行：
 
 1. `20260310143236_create_recipes_table.sql` - recipesテーブル作成・RLS設定
 2. `20260311065834_add_steps_and_url_to_recipes.sql` - steps_array・recipe_url追加
