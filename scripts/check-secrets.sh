@@ -13,10 +13,11 @@ if [ -z "$STAGED_FILES" ]; then
   exit 0
 fi
 
-# .envファイルのチェック
-if echo "$STAGED_FILES" | grep -qE '\.env$|\.env\..*$'; then
+# .envファイルのチェック（.exampleファイルは除外）
+ENV_FILES=$(echo "$STAGED_FILES" | grep -E '\.env(\.local)?$' | grep -v '\.example$' || true)
+if [ -n "$ENV_FILES" ]; then
   echo "❌ エラー: .envファイルがステージングされています"
-  echo "$STAGED_FILES" | grep -E '\.env$|\.env\..*$'
+  echo "$ENV_FILES"
   echo ""
   echo "機密情報を含む.envファイルはコミットできません。"
   echo "以下のコマンドでアンステージしてください:"
