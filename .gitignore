@@ -21,3 +21,11 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.vercel
+
+# Claude Code settings
+.claude/settings.local.json
+.claude/settings.json
+
+# Serena MCP cache and memories
+.serena/
