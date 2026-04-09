@@ -67,3 +67,7 @@ run = "psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'"
 [tasks."db:studio"]
 description = "Supabase Studio起動（ブラウザベースのDB管理UI）"
 run = "open http://localhost:54323"
+
+[tasks."db:seed"]
+description = "シードデータを投入（seed.sqlを実行）"
+run = "psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' -f supabase/seed.sql"

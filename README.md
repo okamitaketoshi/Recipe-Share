@@ -219,6 +219,17 @@ npm run dev
 | `mise run db:reset`  | データ削除 + マイグレーション再適用     |
 | `mise run db:psql`   | psqlシェル起動（DB接続確認）            |
 | `mise run db:studio` | Supabase Studio起動（ブラウザで管理UI） |
+| `mise run db:seed`   | シードデータを投入（seed.sql実行）      |
+
+### シードデータについて
+
+`supabase/seed.sql` には7件のサンプルレシピが含まれています。
+
+**自動適用**: `mise run db:reset` 実行時にマイグレーション後、シードデータが自動的に適用されます。
+
+**手動投入**: シードデータのみを投入したい場合は `mise run db:seed` を実行してください。
+
+**データ内容**: カレーライス、オムライス、カルボナーラなど、材料検索機能のテストに使用できるレシピデータです。共通材料（卵、米、パスタなど）を持つレシピが複数含まれており、AND/OR検索機能のテストに最適です。
 
 ### Supabase Studioの使い方
 
