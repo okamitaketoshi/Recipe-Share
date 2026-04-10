@@ -71,3 +71,14 @@ run = "open http://localhost:54323"
 [tasks."db:seed"]
 description = "シードデータを投入（seed.sqlを実行）"
 run = "psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' -f supabase/seed.sql"
+
+[tasks."supabase:trigger-preview"]
+description = "Supabase Preview環境トリガー（.preview-triggerにタイムスタンプを追記）"
+run = """
+set -e
+echo "🔄 Supabase Preview環境トリガー用ファイルを更新..."
+echo "" >> supabase/.preview-trigger
+echo "Updated at: $(date '+%Y-%m-%d %H:%M:%S')" >> supabase/.preview-trigger
+git add supabase/.preview-trigger
+echo "✅ supabase/.preview-trigger を更新しました"
+"""

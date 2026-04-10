@@ -1,0 +1,20 @@
+# Supabase Preview Environment Trigger
+
+このファイルはSupabase Preview環境作成をトリガーするための専用ファイルです。
+Supabase Freeプランでは、supabaseディレクトリ配下の変更がないとPreview環境が作成されないため、
+このファイルを更新することでPreview環境の作成をトリガーします。
+
+## 使用方法
+
+```bash
+# Preview環境をトリガー
+mise run supabase:trigger-preview
+```
+
+## 更新履歴
+
+- 2026-04-10: 初回作成
+
+Updated at: 2026-04-10 10:52:18
+
+Updated at: 2026-04-10 10:54:01

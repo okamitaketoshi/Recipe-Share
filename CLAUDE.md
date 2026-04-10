@@ -141,6 +141,29 @@ EOF
   - pre-commitエラーは必ず修正してからコミット
   - 「他の人が修正する」と責任転嫁してはいけない
 
+#### Supabase Preview環境トリガー（🔴 必須）
+
+**背景**: Supabase Freeプランでは、`supabase/`ディレクトリ配下の変更がないとPreview環境が作成されない
+
+**コミット作成時の必須手順**:
+
+```bash
+# 1. Supabase Preview環境トリガー（必須）
+mise run supabase:trigger-preview
+
+# 2. pre-commitチェック実行
+mise run pre-commit:check
+
+# 3. コミット作成
+git commit -m "..."
+```
+
+**重要事項**:
+
+- すべてのコミット作成前に必ず実行すること
+- このステップを省略すると、PR作成時にSupabase Preview環境が作成されない
+- `supabase/.preview-trigger`ファイルにタイムスタンプが追記される
+
 ### Issue作成ルール
 
 #### 基本原則
