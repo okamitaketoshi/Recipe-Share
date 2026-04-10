@@ -60,25 +60,75 @@
 
 ### Git操作ルール
 
-#### 絶対禁止
+#### ブランチ戦略: Git Flow
 
-- `git push` - リモートへのプッシュ
-- `git merge` - ブランチのマージ
+このプロジェクトは**Git Flow**を採用しています。詳細は[Git Flow戦略ガイド](docs/git-flow-strategy.md)を参照してください。
+
+**ブランチ構造**:
+
+```
+main（本番環境）
+  └─ develop（開発統合）
+       ├─ feature/issue-XX-description（機能開発）
+       ├─ bugfix/issue-XX-description（バグ修正）
+       ├─ release/vX.Y.Z（リリース準備）
+       └─ hotfix/vX.Y.Z-description（緊急修正）
+```
+
+**ブランチ命名規則**:
+| プレフィックス | 用途 | 例 |
+|---------------|------|-----|
+| `feature/` | 新機能開発 | `feature/issue-42-recipe-image-upload` |
+| `bugfix/` | バグ修正 | `bugfix/issue-15-search-crash` |
+| `release/` | リリース準備 | `release/v1.0.0` |
+| `hotfix/` | 本番緊急修正 | `hotfix/v1.0.1-security-fix` |
+
+**基本ワークフロー**:
+
+1. `develop`から`feature/`または`bugfix/`ブランチを作成
+2. 開発 + テスト
+3. `develop`へPR作成・マージ
+4. リリース準備時は`release/`ブランチを作成
+5. `main`へマージ + タグ付け
+6. 緊急修正は`main`から`hotfix/`ブランチを作成
+
+**重要な制約**:
+
+- ✅ `main`: `release/*`または`hotfix/*`からのみマージ可能
+- ✅ `develop`: すべての開発ブランチの統合先
+- ❌ `feature/*`や`bugfix/*`から`main`へ直接マージ禁止
+- ✅ マージ後は`main`にバージョンタグを付与（例: `v1.0.0`）
+
+**Vercel連携（無償プラン）**:
+
+- `main`ブランチ → Production環境に自動デプロイ
+- `release/*` → `main` のPR → Preview環境が自動生成（リリース前最終確認）
+- `hotfix/*` → `main` のPR → Preview環境が自動生成（修正内容確認）
+- ⚠️ `feature/*` → `develop` のPR → Preview環境なし（ローカルでテスト必須）
+- ⚠️ `bugfix/*` → `develop` のPR → Preview環境なし（ローカルでテスト必須）
+
+#### Git操作の権限
+
+##### 絶対禁止
+
+- `git push` - リモートへのプッシュ（ユーザーが実行）
+- `git merge` - ブランチのマージ（PR経由で実行）
 - `git rebase` - コミット履歴の書き換え
 
-#### ユーザーの明示的な指示がある場合のみ許可
+##### ユーザーの明示的な指示がある場合のみ許可
 
 - `git commit` - **コミット作成は必ずユーザーに確認してから実行**
 - **重要**: ファイルを編集した後、勝手にコミットを作成してはいけない
 - ユーザーが「コミットしてください」「コミット作成してください」などと明示的に指示した場合のみコミット作成を実行
 
-#### 自由に使用可能
+##### 自由に使用可能
 
 - `git status` - 作業ツリーの状態確認
 - `git add` - ステージングエリアへのファイル追加
 - `git diff` - 変更内容の確認
 - `git log` - コミット履歴の確認
 - `git branch` - ブランチ一覧の確認
+- `git tag` - タグの確認
 - `worktree list` - ワークツリー一覧の確認
 
 ### コミット作成時の必須チェック（🔴 絶対遵守）
