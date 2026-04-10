@@ -7,19 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Vercel Preview環境の説明を修正
+  - すべてのPR作成時に自動的にPreview環境が生成されることを明記
+  - マージ先ブランチに関係なく動作することを追記
+  - docs/git-flow-strategy.md を全面的に修正
+  - CLAUDE.md のVercel連携説明を修正
+- 誤った制約情報（developへのPRでPreview環境なし）を削除
+
 ### Added
 
 - Git Flow戦略の導入
 - CHANGELOG.mdの作成
 - Git Flow戦略ガイドドキュメント（docs/git-flow-strategy.md）
-- Vercel無償プラン対応のワークフロー説明
 
 ### Changed
 
 - CLAUDE.mdにGit Flow戦略を追加
-- Git Flow戦略ガイドにVercel無償プランの制約と対応方針を追記
-- feature/bugfixブランチはローカル環境でのテスト必須に変更
-- release/hotfixブランチのみVercel Preview環境で最終確認可能
 
 ## [1.0.0] - 2026-04-10
 

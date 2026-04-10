@@ -2,23 +2,24 @@
 
 このドキュメントは、Recipe-ShareプロジェクトにおけるGit Flow運用の詳細ガイドです。
 
-## ⚠️ Vercel無償プラン対応について
+## 🎉 Vercel Preview環境について
 
-このプロジェクトはVercel無償プランを使用しているため、以下の制約があります：
+このプロジェクトはVercelを使用しており、**すべてのPR作成時に自動的にPreview環境が生成されます**。
 
-**Preview環境の制約**:
-- ✅ `main`ブランチへのPR → Preview環境が自動生成
-- ❌ `develop`ブランチへのPR → Preview環境は生成されない
+**Preview環境の動作**:
+- ✅ すべてのPRで自動的にPreview環境が生成される
+- ✅ マージ先ブランチに関係なく動作する
+- ✅ PRごとに独立したURLが発行される
 
 **対応方針**:
 | ブランチ種別 | マージ先 | Preview環境 | 動作確認方法 |
 |------------|---------|------------|------------|
-| `feature/*` | `develop` | ❌ なし | ローカル環境（`npm run dev`）で十分なテスト |
-| `bugfix/*` | `develop` | ❌ なし | ローカル環境（`npm run dev`）で十分なテスト |
+| `feature/*` | `develop` | ✅ あり | Vercel Preview環境で動作確認 |
+| `bugfix/*` | `develop` | ✅ あり | Vercel Preview環境で動作確認 |
 | `release/*` | `main` | ✅ あり | Vercel Preview環境で最終確認 |
 | `hotfix/*` | `main` | ✅ あり | Vercel Preview環境で確認 |
 
-**重要**: `feature/*`や`bugfix/*`の開発時は、ローカル環境での十分なテストが必須です。`release/*`ブランチでmainへのPRを作成した時点で、Vercel Preview環境が自動生成され、本番デプロイ前の最終確認が可能になります。
+**重要**: PR作成後、Vercel Preview環境のURLが自動的にPRコメントに追加されます。Preview環境で十分な動作確認を実施してからマージしてください。
 
 ---
 
@@ -68,9 +69,9 @@ main（本番環境 - Vercel Production）
 - ✅ マージ前に必ずpre-commitチェック
 
 **Vercel連携**: 
-- ⚠️ **無償プラン制約**: `develop`ブランチへのPRではPreview環境は生成されません
-- ✅ **動作確認方法**: ローカル環境（`npm run dev`）で十分なテストを実施
-- 💡 **代替手段**: 必要に応じてdraft PRを一時的に作成してPreview環境を確認
+- ✅ **PR作成時に自動的にPreview環境が生成される**
+- ✅ Preview URLはPRコメントに自動的に追加される
+- ✅ Preview環境で動作確認を実施してからマージ
 
 ---
 
@@ -183,10 +184,9 @@ git checkout -b feature/issue-42-recipe-image-upload
 # 3. 開発作業
 # （コード編集、テスト作成）
 
-# 4. ローカル環境で動作確認（重要！）
+# 4. ローカル環境で動作確認
 npm run dev
-# http://localhost:5173 で十分なテストを実施
-# ⚠️ developへのPRではVercel Preview環境が生成されないため、ローカルテスト必須
+# http://localhost:5173 で基本的な動作を確認
 
 # 5. Supabase Previewトリガー + pre-commitチェック
 mise run supabase:trigger-preview
@@ -227,23 +227,31 @@ gh pr create \
 Closes #42
 
 ## ローカル動作確認
-- [x] `npm run dev`で動作確認済み
+- [x] `npm run dev`で基本動作確認済み
 - [x] 画像アップロード機能が正常に動作
 - [x] 既存機能にデグレなし
+
+## Vercel Preview確認
+- [ ] PR作成後、Vercel Preview環境で最終確認
+- [ ] 画像アップロード機能の動作確認
+- [ ] 既存機能のデグレチェック
 
 ## テスト方法
 1. レシピ作成画面で画像を選択
 2. プレビューが表示されることを確認
 3. レシピ保存後、画像が表示されることを確認
 
-⚠️ **注意**: developへのPRではVercel Preview環境が生成されません。ローカル環境（http://localhost:5173）で十分なテストを実施済みです。
+✅ **Vercel Preview環境**: PR作成時に自動生成されます。Preview URLで最終動作確認を実施してください。
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 EOF
 )"
 
-# 9. レビュー完了後、developへマージ
-# ⚠️ この時点ではVercel Preview環境は生成されない（ローカルテストで品質担保）
+# 9. PR作成後、Vercel Preview環境で最終確認
+# ✅ PR作成時に自動的にVercel Preview環境が生成される
+# ✅ Preview URLで最終動作確認を実施
+
+# 10. レビュー完了後、developへマージ
 
 # 10. マージ完了後、ローカルブランチ削除
 git checkout develop
@@ -264,7 +272,7 @@ git checkout -b bugfix/issue-15-search-crash
 # 2. バグ修正 + テスト追加
 # （コード修正）
 
-# 3. ローカル環境で動作確認（重要！）
+# 3. ローカル環境で動作確認
 npm run dev
 # バグが修正されていることを確認
 
@@ -299,13 +307,19 @@ Fixes #15
 - [x] クラッシュが発生しないことを確認
 - [x] 既存機能にデグレなし
 
-⚠️ **注意**: developへのPRではVercel Preview環境が生成されません。
+## Vercel Preview確認
+- [ ] PR作成後、Vercel Preview環境で最終確認
+
+✅ **Vercel Preview環境**: PR作成時に自動生成されます。
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 EOF
 )"
 
-# 7. マージ完了後、ローカルブランチ削除
+# 7. PR作成後、Vercel Preview環境で最終確認
+# ✅ PR作成時に自動的にVercel Preview環境が生成される
+
+# 8. マージ完了後、ローカルブランチ削除
 git checkout develop
 git pull origin develop
 git branch -d bugfix/issue-15-search-crash
@@ -389,7 +403,7 @@ gh pr create \
 - Production: https://recipe-share-two.vercel.app
 - Preview: （PR作成後に自動生成されるURLで確認）
 
-✅ **Vercel Preview環境**: mainへのPR作成時に自動生成されます。Preview URLで本番デプロイ前の最終確認を実施してください。
+✅ **Vercel Preview環境**: PR作成時に自動生成されます。Preview URLで本番デプロイ前の最終確認を実施してください。
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 EOF
@@ -552,18 +566,19 @@ git push -u origin develop
 
 ### 3. Vercel環境設定
 
-**現在の設定（無償プラン）**:
+**現在の設定**:
 - Production Branch: `main`
-- Preview環境: `main`ブランチへのPR時のみ自動生成
+- Preview環境: すべてのPR作成時に自動生成
 
 **デプロイフロー**:
 - `main`へのpush → **Production環境に自動デプロイ**
-- `release/*` → `main` のPR → **Preview環境が自動生成**（リリース前最終確認）
-- `hotfix/*` → `main` のPR → **Preview環境が自動生成**（修正内容確認）
-- `feature/*` → `develop` のPR → ❌ Preview環境なし（ローカルでテスト）
-- `bugfix/*` → `develop` のPR → ❌ Preview環境なし（ローカルでテスト）
+- すべてのPR作成 → **Preview環境が自動生成**
+  - `feature/*` → `develop` のPR → Preview環境で動作確認
+  - `bugfix/*` → `develop` のPR → Preview環境で動作確認
+  - `release/*` → `main` のPR → Preview環境で最終確認（本番デプロイ前）
+  - `hotfix/*` → `main` のPR → Preview環境で確認
 
-**重要**: 無償プランでは`develop`ブランチを固定Preview環境として紐付けることができないため、`feature/*`や`bugfix/*`の動作確認はローカル環境で実施してください。
+**重要**: すべてのPRで自動的にVercel Preview環境が生成されます。PR作成後、Preview URLで十分な動作確認を実施してからマージしてください。
 
 ---
 
@@ -594,13 +609,13 @@ git push -u origin develop
    git push origin --delete feature/old-feature
    ```
 
-6. **feature/bugfixは必ずローカル環境でテスト**
+6. **ローカル環境で基本動作確認**
    ```bash
    npm run dev
-   # http://localhost:5173 で十分な動作確認を実施
+   # http://localhost:5173 で基本的な動作確認を実施
    ```
-   - ⚠️ developへのPRではVercel Preview環境が生成されないため必須
-   - ✅ すべての変更内容をローカルで確認してからPR作成
+   - ✅ PR作成前にローカルで基本動作を確認
+   - ✅ 明らかなバグがないことを確認
 
 7. **コミット前に必ずpre-commitチェック**
    ```bash
@@ -608,9 +623,10 @@ git push -u origin develop
    mise run pre-commit:check
    ```
 
-8. **release/hotfixはVercel Preview環境で最終確認**
-   - ✅ mainへのPR作成時にPreview環境が自動生成される
-   - ✅ Preview URLで本番デプロイ前の最終確認を実施
+8. **PR作成後、Vercel Preview環境で最終確認**
+   - ✅ すべてのPRでPreview環境が自動生成される
+   - ✅ Preview URLで十分な動作確認を実施してからマージ
+   - ✅ 特にreleaseブランチは本番デプロイ前の最終確認として重要
 
 9. **コミットメッセージに絵文字プレフィックス**
    - ✨ feat: 新機能
@@ -669,26 +685,25 @@ git push
 
 **A**: releaseブランチを作成してリリースプロセスを進めてください。定期的なリリースサイクルを設定することで乖離を防げます。
 
-### Q5. developブランチの動作確認をVercel上で行いたい場合は？
+### Q5. PRを作成する前に、Vercel Preview環境で確認したい場合は？
 
-**A**: 無償プランでは固定Preview環境を作れませんが、以下の代替手段があります：
+**A**: draft PRを作成してください。
 
-**方法1: ローカル環境で確認（推奨）**
 ```bash
-git checkout develop
-git pull origin develop
-npm run dev
+# 作業ブランチから draft PR を作成
+gh pr create --base develop --title "[DRAFT] 動作確認中" --draft
+
+# → Vercel Preview環境が自動生成される
+# Preview URLで動作確認
+
+# 確認完了後、draft を解除してレビュー依頼
+gh pr ready
 ```
 
-**方法2: 一時的なdraft PRを作成**
-```bash
-git checkout develop
-gh pr create --base main --title "[DRAFT] develop動作確認用" --draft
-# → Vercel Preview環境が生成される
-# 確認後、PRをクローズ（マージしない）
-```
-
-⚠️ **注意**: 方法2は頻繁に実行するとPR履歴が汚れるため、通常はローカル環境での確認を推奨します。
+✅ **メリット**: 
+- PR作成と同時にPreview環境が生成される
+- draft状態なのでレビュワーに通知されない
+- 動作確認完了後、そのままレビュー依頼に移行できる
 
 ---
 
