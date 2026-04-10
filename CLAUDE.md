@@ -99,13 +99,15 @@ main（本番環境）
 - ❌ `feature/*`や`bugfix/*`から`main`へ直接マージ禁止
 - ✅ マージ後は`main`にバージョンタグを付与（例: `v1.0.0`）
 
-**Vercel連携（無償プラン）**:
+**Vercel連携**:
 
 - `main`ブランチ → Production環境に自動デプロイ
-- `release/*` → `main` のPR → Preview環境が自動生成（リリース前最終確認）
-- `hotfix/*` → `main` のPR → Preview環境が自動生成（修正内容確認）
-- ⚠️ `feature/*` → `develop` のPR → Preview環境なし（ローカルでテスト必須）
-- ⚠️ `bugfix/*` → `develop` のPR → Preview環境なし（ローカルでテスト必須）
+- すべてのPR作成 → Preview環境が自動生成
+  - ✅ `feature/*` → `develop` のPR → Preview環境で動作確認
+  - ✅ `bugfix/*` → `develop` のPR → Preview環境で動作確認
+  - ✅ `release/*` → `main` のPR → Preview環境で最終確認（本番デプロイ前）
+  - ✅ `hotfix/*` → `main` のPR → Preview環境で確認
+- ⚠️ PR作成後、Preview URLで十分な動作確認を実施してからマージすること
 
 #### Git操作の権限
 
