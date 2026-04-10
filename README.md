@@ -375,14 +375,73 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 
 **注意**: `.env`ファイルは`.gitignore`に含まれているため、各開発者が個別に設定する必要があります。
 
-## デプロイ
+## 🚀 デプロイ
 
-### Vercel / Netlify
+### 本番環境
 
-1. リポジトリを連携
-2. ビルドコマンド: `npm run build`
-3. 公開ディレクトリ: `dist`
-4. 環境変数を設定（VITE_SUPABASE_URL、VITE_SUPABASE_ANON_KEY）
+**Vercel URL**: https://recipe-share-two.vercel.app
+
+このアプリケーションはVercelにデプロイされており、`main`ブランチへのpush時に自動的にデプロイされます。
+
+### Vercelデプロイ手順
+
+#### 1. 初回デプロイ
+
+詳細な手順は `docs/vercel-deployment-guide.md` を参照してください。
+
+```bash
+# Vercel CLIインストール
+npm install -g vercel
+
+# Vercelにログイン
+vercel login
+
+# プロジェクトをデプロイ
+vercel
+
+# 本番環境にデプロイ
+vercel --prod
+```
+
+#### 2. 環境変数の設定
+
+Vercel環境変数は以下の方法で設定してください：
+
+```bash
+# VITE_SUPABASE_URL を設定
+vercel env add VITE_SUPABASE_URL
+
+# VITE_SUPABASE_ANON_KEY を設定
+vercel env add VITE_SUPABASE_ANON_KEY
+```
+
+詳細は `docs/vercel-env-setup-guide.md` を参照してください。
+
+#### 3. デプロイ後の動作確認
+
+デプロイ完了後、以下を確認してください：
+
+- レシピ一覧が正常に表示される
+- 材料検索が動作する
+- Supabase接続が正常に動作する
+- モバイル表示が正常である
+
+詳細なチェックリストは `docs/vercel-deployment-validation.md` を参照してください。
+
+### ビルド設定
+
+Vercelは自動的に以下の設定を検出します：
+
+- **Framework Preset**: Vite
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Install Command**: `npm install`
+- **Node.js Version**: 18.x（推奨）
+
+### 自動デプロイ
+
+- **Production**: `main`ブランチへのpush
+- **Preview**: プルリクエスト作成時に自動生成
 
 ### Supabase設定
 
@@ -390,6 +449,13 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 2. マイグレーションSQL実行
 3. API URLとAnon Keyを環境変数に設定
 4. RLSポリシーが適用されていることを確認
+
+### デプロイ関連ドキュメント
+
+- [Vercel デプロイガイド](docs/vercel-deployment-guide.md)
+- [環境変数設定ガイド](docs/vercel-env-setup-guide.md)
+- [Supabase接続テスト](docs/supabase-connection-test.md)
+- [デプロイ後の動作確認](docs/vercel-deployment-validation.md)
 
 ## 既知の制限事項
 
@@ -482,5 +548,5 @@ Type error: ...
 
 ---
 
-**最終更新**: 2026-04-03
+**最終更新**: 2026-04-09
 **メンテナー**: @okamitaketoshi
