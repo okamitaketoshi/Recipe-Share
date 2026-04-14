@@ -20,11 +20,7 @@ export class SupabaseRecipeRepository implements IRecipeRepository {
   }
 
   async findById(id: string): Promise<Recipe | null> {
-    const { data, error } = await this.supabase
-      .from('recipes')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await this.supabase.from('recipes').select('*').eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') return null; // Not found
