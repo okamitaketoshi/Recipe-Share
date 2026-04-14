@@ -5,8 +5,10 @@ import { RecipeCard } from './components/RecipeCard';
 import { RecipeForm } from './components/RecipeForm';
 import { IngredientSearch } from './components/IngredientSearch';
 import { filterRecipesByIngredients } from './lib/search';
+import { SupabaseRecipeRepository } from './infrastructure/repositories/SupabaseRecipeRepository';
 
 function App() {
+  const recipeRepository = new SupabaseRecipeRepository(supabase);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -31,13 +33,8 @@ function App() {
 
   const fetchRecipes = async () => {
     try {
-      const { data, error } = await supabase
-        .from('recipes')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setRecipes(data || []);
+      const data = await recipeRepository.findAll();
+      setRecipes(data);
     } catch (error) {
       console.error('Error fetching recipes:', error);
     } finally {
@@ -52,17 +49,7 @@ function App() {
     recipe_url: string | null;
   }) => {
     try {
-      const { error } = await supabase.from('recipes').insert([
-        {
-          title: data.title,
-          ingredients: data.ingredients,
-          steps_array: data.steps_array,
-          recipe_url: data.recipe_url,
-          steps: data.steps_array.join('\n'),
-        },
-      ]);
-
-      if (error) throw error;
+      await recipeRepository.create(data);
       await fetchRecipes();
       setShowForm(false);
     } catch (error) {
@@ -80,18 +67,7 @@ function App() {
     if (!editingRecipe) return;
 
     try {
-      const { error } = await supabase
-        .from('recipes')
-        .update({
-          title: data.title,
-          ingredients: data.ingredients,
-          steps_array: data.steps_array,
-          recipe_url: data.recipe_url,
-          steps: data.steps_array.join('\n'),
-        })
-        .eq('id', editingRecipe.id);
-
-      if (error) throw error;
+      await recipeRepository.update(editingRecipe.id, data);
       await fetchRecipes();
       setEditingRecipe(undefined);
       setShowForm(false);
@@ -103,9 +79,7 @@ function App() {
 
   const handleDeleteRecipe = async (id: string) => {
     try {
-      const { error } = await supabase.from('recipes').delete().eq('id', id);
-
-      if (error) throw error;
+      await recipeRepository.delete(id);
       await fetchRecipes();
     } catch (error) {
       console.error('Error deleting recipe:', error);
