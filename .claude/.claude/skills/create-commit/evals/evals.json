@@ -1,0 +1,23 @@
+{
+  "skill_name": "create-commit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "レシピ画像アップロード機能を実装しました。src/components/ImageUpload.tsxとsrc/hooks/useImageUpload.tsを追加して、Supabase Storageと連携できるようにしました。コミットしてください。",
+      "expected_output": "✨絵文字付きのコミットメッセージが生成され、適切なブランチ（feature/recipe-image-upload等）が作成され、mise run supabase:trigger-preview → mise run pre-commit:check → git commitの順で実行される",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "検索機能のバグを修正しました。特殊文字を含む材料名で検索すると結果が0件になる問題を、src/lib/search.tsで正規表現のエスケープ処理を追加して直しました。コミット作成してください。",
+      "expected_output": "🐛絵文字付きのバグ修正コミットメッセージが生成され、適切なブランチ（fix/search-special-chars等）が作成または使用され、必須手順（supabaseトリガー、pre-commitチェック）を経てコミットが作成される",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "mise.tomlに新しいタスク`db:migrate`を追加しました。また、CLAUDE.mdにデータベースマイグレーションの手順を追記しました。コミットお願いします。",
+      "expected_output": "🔧絵文字付きの設定変更コミットメッセージが生成され、chore/プレフィックスのブランチが作成され、mise taskの説明と使用方法を含む構造化されたコミットメッセージでコミットが作成される",
+      "files": []
+    }
+  ]
+}

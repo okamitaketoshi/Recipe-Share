@@ -1,0 +1,23 @@
+{
+  "skill_name": "create-pr",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "feature/recipe-image-uploadブランチで画像アップロード機能を実装しました。src/components/ImageUpload.tsx、src/hooks/useImageUpload.ts、src/api/upload.tsを追加して、Supabase Storageと連携できるようにしました。コミットも完了しています。PR作成してください。",
+      "expected_output": "✨絵文字付きのPRタイトルが生成され、構造化された本文（概要、背景、詳細、技術スタック、受け入れ条件、テストプラン）を含むPRが作成される。gh pr createコマンドが実行され、PR URLが報告される",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "fix/search-special-charsブランチで、材料検索のバグを修正しました。特殊文字（括弧など）を含む材料名で検索できない問題を、src/lib/search.tsで正規表現のエスケープ処理を追加して直しました。テストも追加済みです。プルリクエスト作成してください。",
+      "expected_output": "🐛絵文字付きのバグ修正PRタイトルが生成され、問題の背景、修正内容、テスト追加を含む構造化されたPR本文でPRが作成される。Issue番号があれば関連Issueセクションも含まれる",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "chore/add-create-commit-skillブランチで作業しています。.claude/skills/create-commit/にコミット作成スキルを追加しました。SKILL.mdとevals.jsonを作成して、コミット作成を自動化できるようにしました。コミットも済んでいます。PR作成お願いします。",
+      "expected_output": "🔧絵文字付きの設定変更PRタイトルが生成され、スキルの目的、ファイル説明、使用方法を含む詳細なPR本文でPRが作成される。chore/プレフィックスのブランチから適切にPRが作成される",
+      "files": []
+    }
+  ]
+}
