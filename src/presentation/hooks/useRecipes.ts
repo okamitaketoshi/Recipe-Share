@@ -1,12 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { supabase } from '../../lib/supabase';
+import { useState, useEffect, useCallback } from 'react';
 import { RecipeDto } from '../../application/dto/RecipeDto';
 import { CreateRecipeRequest } from '../../application/dto/CreateRecipeRequest';
-import { SupabaseRecipeRepository } from '../../infrastructure/repositories/SupabaseRecipeRepository';
-import { GetAllRecipesUseCase } from '../../application/usecases/GetAllRecipesUseCase';
-import { CreateRecipeUseCase } from '../../application/usecases/CreateRecipeUseCase';
-import { UpdateRecipeUseCase } from '../../application/usecases/UpdateRecipeUseCase';
-import { DeleteRecipeUseCase } from '../../application/usecases/DeleteRecipeUseCase';
+import { useRecipeContext } from './useRecipeContext';
 
 interface UseRecipesReturn {
   recipes: RecipeDto[];
@@ -24,12 +19,14 @@ export function useRecipes(): UseRecipesReturn {
   const [recipes, setRecipes] = useState<RecipeDto[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // UseCase初期化（useRefで再生成を防ぐ）
-  const recipeRepository = useRef(new SupabaseRecipeRepository(supabase)).current;
-  const getAllRecipesUseCase = useRef(new GetAllRecipesUseCase(recipeRepository)).current;
-  const createRecipeUseCase = useRef(new CreateRecipeUseCase(recipeRepository)).current;
-  const updateRecipeUseCase = useRef(new UpdateRecipeUseCase(recipeRepository)).current;
-  const deleteRecipeUseCase = useRef(new DeleteRecipeUseCase(recipeRepository)).current;
+  // Contextから依存関係を取得（DI注入）
+  const {
+    recipeRepository,
+    getAllRecipesUseCase,
+    createRecipeUseCase,
+    updateRecipeUseCase,
+    deleteRecipeUseCase,
+  } = useRecipeContext();
 
   /**
    * レシピ一覧を取得する
