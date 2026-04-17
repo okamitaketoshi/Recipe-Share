@@ -114,6 +114,73 @@ main（本番環境）
    - ✅ ケバブケース（小文字、ハイフン区切り）
    - ✅ 簡潔で内容が分かる名前（3-5単語程度）
 
+#### Git Worktreeを使用する場合（並行開発時）
+
+**Worktree作成時の必須検証（🔴 絶対遵守）**:
+
+Worktreeを使用して並行開発を行う場合、以下の検証を**必ず実施**すること：
+
+1. **Worktree作成後の即時検証**
+
+   ```bash
+   # Worktree一覧を確認（新しいworktreeが表示されること）
+   git worktree list
+
+   # 期待される出力例:
+   # /path/to/project                      abc1234 [develop]
+   # /path/to/project/wt-issue-XX-name    def5678 [feature/issue-XX-name]
+   ```
+
+2. **ディレクトリ存在確認**
+
+   ```bash
+   # Worktreeディレクトリが実際に存在するか確認
+   ls -ld wt-issue-*
+
+   # 期待される出力例:
+   # drwxr-xr-x 15 user group 480 Apr 17 10:30 wt-issue-XX-name
+   ```
+
+3. **作業ディレクトリ確認**
+
+   ```bash
+   # Worktreeディレクトリに移動
+   cd wt-issue-XX-name
+
+   # 現在地を確認（worktreeディレクトリにいることを確認）
+   pwd
+
+   # 期待される出力例:
+   # /Users/user/project/wt-issue-XX-name
+   ```
+
+4. **ブランチ確認**
+
+   ```bash
+   # 正しいブランチにいることを確認
+   git branch --show-current
+
+   # 期待される出力例:
+   # feature/issue-XX-name
+   ```
+
+**実装開始前の必須チェックリスト**:
+
+Developer Agent起動前、または実装を開始する前に、以下を**必ず確認**すること：
+
+- [ ] `git worktree list`で新しいworktreeが表示されている
+- [ ] `ls -ld wt-issue-*`でディレクトリが存在している
+- [ ] `pwd`でworktreeディレクトリにいる（`/path/to/project/wt-issue-XX-name`）
+- [ ] `git branch --show-current`で正しいブランチにいる（`feature/issue-XX-name`）
+- [ ] ❌ developブランチにいない（`develop`と表示されたら即座に中断）
+
+**禁止事項**:
+
+- ❌ Worktree作成後、検証せずに実装を開始する
+- ❌ `pwd`で現在地を確認せずにDeveloper Agentを起動する
+- ❌ developブランチで作業していることに気づかずに実装を進める
+- ❌ Worktree作成失敗を「成功」と誤報告する
+
 **禁止事項**:
 
 - ❌ mainブランチから直接feature/bugfixブランチを作成
