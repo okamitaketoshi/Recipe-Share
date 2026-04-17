@@ -83,6 +83,44 @@ main（本番環境）
 | `release/` | リリース準備 | `release/v1.0.0` |
 | `hotfix/` | 本番緊急修正 | `hotfix/v1.0.1-security-fix` |
 
+**Issue着手時の手順（🔴 必須）**:
+
+新しいissueに着手する際は、必ず以下の手順を実施すること：
+
+1. **developブランチに切り替え**
+
+   ```bash
+   git checkout develop
+   git pull origin develop  # 最新状態に更新
+   ```
+
+2. **issue内容を確認**
+   - `/get-github-issue <issue-number>` スキルを使用してissue内容を確認
+   - 例: `/get-github-issue 22`
+
+3. **新しいブランチを作成**
+
+   ```bash
+   # feature/issue-XX-description 形式
+   git checkout -b feature/issue-22-domain-model
+
+   # または bugfix/issue-XX-description 形式
+   git checkout -b bugfix/issue-15-search-crash
+   ```
+
+4. **ブランチ名の要件**
+   - ✅ 必ず `feature/` または `bugfix/` プレフィックスを使用
+   - ✅ 必ずissue番号を含める（トレーサビリティ確保）
+   - ✅ ケバブケース（小文字、ハイフン区切り）
+   - ✅ 簡潔で内容が分かる名前（3-5単語程度）
+
+**禁止事項**:
+
+- ❌ mainブランチから直接feature/bugfixブランチを作成
+- ❌ developブランチで直接コミット
+- ❌ issue番号を含めないブランチ名
+- ❌ 既存のfeature/bugfixブランチで別issueの作業
+
 **基本ワークフロー**:
 
 1. `develop`から`feature/`または`bugfix/`ブランチを作成
