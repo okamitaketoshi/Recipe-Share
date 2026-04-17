@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { Recipe } from '../../lib/supabase';
+import { RecipeDTO } from '../dto/RecipeDTO';
 import {
   IRecipeRepository,
   CreateRecipeData,
@@ -9,27 +9,27 @@ import {
 export class SupabaseRecipeRepository implements IRecipeRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async findAll(): Promise<Recipe[]> {
+  async findAll(): Promise<RecipeDTO[]> {
     const { data, error } = await this.supabase
       .from('recipes')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as RecipeDTO[];
   }
 
-  async findById(id: string): Promise<Recipe | null> {
+  async findById(id: string): Promise<RecipeDTO | null> {
     const { data, error } = await this.supabase.from('recipes').select('*').eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') return null; // Not found
       throw error;
     }
-    return data;
+    return data as RecipeDTO;
   }
 
-  async create(recipeData: CreateRecipeData): Promise<Recipe> {
+  async create(recipeData: CreateRecipeData): Promise<RecipeDTO> {
     const { data, error } = await this.supabase
       .from('recipes')
       .insert([
@@ -45,10 +45,10 @@ export class SupabaseRecipeRepository implements IRecipeRepository {
       .single();
 
     if (error) throw error;
-    return data;
+    return data as RecipeDTO;
   }
 
-  async update(id: string, recipeData: UpdateRecipeData): Promise<Recipe> {
+  async update(id: string, recipeData: UpdateRecipeData): Promise<RecipeDTO> {
     const { data, error } = await this.supabase
       .from('recipes')
       .update({
@@ -63,7 +63,7 @@ export class SupabaseRecipeRepository implements IRecipeRepository {
       .single();
 
     if (error) throw error;
-    return data;
+    return data as RecipeDTO;
   }
 
   async delete(id: string): Promise<void> {

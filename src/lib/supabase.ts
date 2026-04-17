@@ -20,12 +20,4 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export type Recipe = {
-  id: string;
-  title: string;
-  ingredients: string[];
-  steps: string;
-  steps_array: string[];
-  recipe_url: string | null;
-  created_at: string;
-};
+export type { RecipeDTO as Recipe } from '../infrastructure/dto/RecipeDTO';
