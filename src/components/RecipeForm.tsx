@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
-import { Recipe } from '../lib/supabase';
+import { RecipeDto } from '../application/dto/RecipeDto';
 
 interface RecipeFormProps {
-  recipe?: Recipe;
+  recipe?: RecipeDto;
   onSubmit: (data: {
     title: string;
     ingredients: string[];
@@ -16,16 +16,14 @@ interface RecipeFormProps {
 export function RecipeForm({ recipe, onSubmit, onClose }: RecipeFormProps) {
   const [title, setTitle] = useState(recipe?.title || '');
   const [ingredients, setIngredients] = useState<string[]>(recipe?.ingredients || ['']);
-  const [steps, setSteps] = useState<string[]>(
-    recipe?.steps_array && recipe.steps_array.length > 0 ? recipe.steps_array : ['']
-  );
+  const [steps, setSteps] = useState<string[]>(recipe?.steps_array || ['']);
   const [recipeUrl, setRecipeUrl] = useState(recipe?.recipe_url || '');
 
   useEffect(() => {
     if (recipe) {
       setTitle(recipe.title);
       setIngredients(recipe.ingredients.length > 0 ? recipe.ingredients : ['']);
-      setSteps(recipe.steps_array && recipe.steps_array.length > 0 ? recipe.steps_array : ['']);
+      setSteps(recipe.steps_array.length > 0 ? recipe.steps_array : ['']);
       setRecipeUrl(recipe.recipe_url || '');
     }
   }, [recipe]);

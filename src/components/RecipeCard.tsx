@@ -1,9 +1,9 @@
 import { CreditCard as Edit2, Trash2, ExternalLink } from 'lucide-react';
-import { Recipe } from '../lib/supabase';
+import { RecipeDto } from '../application/dto/RecipeDto';
 
 interface RecipeCardProps {
-  recipe: Recipe;
-  onEdit: (recipe: Recipe) => void;
+  recipe: RecipeDto;
+  onEdit: (recipe: RecipeDto) => void;
   onDelete: (id: string) => void;
 }
 
@@ -58,18 +58,14 @@ export function RecipeCard({ recipe, onEdit, onDelete }: RecipeCardProps) {
       <div>
         <h4 className="font-semibold text-gray-700 mb-2">作り方</h4>
         <ol className="space-y-3">
-          {recipe.steps_array && recipe.steps_array.length > 0 ? (
-            recipe.steps_array.map((step, index) => (
-              <li key={index} className="flex gap-3">
-                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 text-orange-600 font-semibold text-sm flex-shrink-0">
-                  {index + 1}
-                </span>
-                <span className="text-gray-600">{step}</span>
-              </li>
-            ))
-          ) : (
-            <p className="text-gray-600 whitespace-pre-wrap">{recipe.steps}</p>
-          )}
+          {recipe.steps_array.map((step, index) => (
+            <li key={index} className="flex gap-3">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 text-orange-600 font-semibold text-sm flex-shrink-0">
+                {index + 1}
+              </span>
+              <span className="text-gray-600">{step}</span>
+            </li>
+          ))}
         </ol>
       </div>
 

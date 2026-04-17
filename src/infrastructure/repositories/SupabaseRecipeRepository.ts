@@ -1,74 +1,102 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { RecipeDTO } from '../dto/RecipeDTO';
-import {
-  IRecipeRepository,
-  CreateRecipeData,
-  UpdateRecipeData,
-} from '../../domain/repositories/IRecipeRepository';
+import { Recipe } from '../../domain/models/Recipe';
+import { RecipeId } from '../../domain/models/RecipeId';
+import { Ingredient } from '../../domain/models/Ingredient';
+import { CookingStep } from '../../domain/models/CookingStep';
+import { IRecipeRepository } from '../../domain/repositories/IRecipeRepository';
 
 export class SupabaseRecipeRepository implements IRecipeRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async findAll(): Promise<RecipeDTO[]> {
+  async findAll(): Promise<Recipe[]> {
     const { data, error } = await this.supabase
       .from('recipes')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return (data || []) as RecipeDTO[];
+    if (error) throw new Error(error.message);
+    return (data || []).map((item) => this.toDomainModel(item as RecipeDTO));
   }
 
-  async findById(id: string): Promise<RecipeDTO | null> {
-    const { data, error } = await this.supabase.from('recipes').select('*').eq('id', id).single();
+  async findById(id: RecipeId): Promise<Recipe | null> {
+    const { data, error } = await this.supabase
+      .from('recipes')
+      .select('*')
+      .eq('id', id.getValue())
+      .single();
 
     if (error) {
       if (error.code === 'PGRST116') return null; // Not found
-      throw error;
+      throw new Error(error.message);
     }
-    return data as RecipeDTO;
+    return this.toDomainModel(data as RecipeDTO);
   }
 
-  async create(recipeData: CreateRecipeData): Promise<RecipeDTO> {
+  async create(recipe: Recipe): Promise<Recipe> {
+    const dbData = this.toDatabase(recipe);
+    const { data, error } = await this.supabase.from('recipes').insert([dbData]).select().single();
+
+    if (error) throw new Error(error.message);
+    return this.toDomainModel(data as RecipeDTO);
+  }
+
+  async update(recipe: Recipe): Promise<Recipe> {
+    const dbData = this.toDatabase(recipe);
     const { data, error } = await this.supabase
       .from('recipes')
-      .insert([
-        {
-          title: recipeData.title,
-          ingredients: recipeData.ingredients,
-          steps_array: recipeData.steps_array,
-          recipe_url: recipeData.recipe_url,
-          steps: recipeData.steps_array.join('\n'),
-        },
-      ])
+      .update(dbData)
+      .eq('id', recipe.getId().getValue())
       .select()
       .single();
 
-    if (error) throw error;
-    return data as RecipeDTO;
+    if (error) throw new Error(error.message);
+    return this.toDomainModel(data as RecipeDTO);
   }
 
-  async update(id: string, recipeData: UpdateRecipeData): Promise<RecipeDTO> {
-    const { data, error } = await this.supabase
-      .from('recipes')
-      .update({
-        title: recipeData.title,
-        ingredients: recipeData.ingredients,
-        steps_array: recipeData.steps_array,
-        recipe_url: recipeData.recipe_url,
-        steps: recipeData.steps_array.join('\n'),
+  async delete(id: RecipeId): Promise<void> {
+    const { error } = await this.supabase.from('recipes').delete().eq('id', id.getValue());
+
+    if (error) throw new Error(error.message);
+  }
+
+  subscribe(onRecipeChange: () => void): () => void {
+    const channel = this.supabase
+      .channel('recipes-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, () => {
+        onRecipeChange();
       })
-      .eq('id', id)
-      .select()
-      .single();
+      .subscribe();
 
-    if (error) throw error;
-    return data as RecipeDTO;
+    return () => {
+      this.supabase.removeChannel(channel);
+    };
   }
 
-  async delete(id: string): Promise<void> {
-    const { error } = await this.supabase.from('recipes').delete().eq('id', id);
+  // データベース型 → ドメインモデル変換
+  private toDomainModel(data: RecipeDTO): Recipe {
+    return Recipe.reconstruct(
+      RecipeId.create(data.id),
+      data.title,
+      data.ingredients.map((i) => Ingredient.create(i)),
+      data.steps_array.map((s, idx) => CookingStep.create(idx + 1, s)),
+      data.recipe_url,
+      new Date(data.created_at)
+    );
+  }
 
-    if (error) throw error;
+  // ドメインモデル → データベース型変換
+  private toDatabase(recipe: Recipe): Omit<RecipeDTO, 'created_at'> {
+    return {
+      id: recipe.getId().getValue(),
+      title: recipe.getTitle(),
+      ingredients: recipe.getIngredients().map((i) => i.getValue()),
+      steps_array: recipe.getSteps().map((s) => s.getDescription()),
+      steps: recipe
+        .getSteps()
+        .map((s) => s.getDescription())
+        .join('\n'),
+      recipe_url: recipe.getRecipeUrl(),
+    };
   }
 }
