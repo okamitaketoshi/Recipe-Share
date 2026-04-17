@@ -1,18 +1,11 @@
-import { Recipe } from '../../lib/supabase';
-
-export type CreateRecipeData = {
-  title: string;
-  ingredients: string[];
-  steps_array: string[];
-  recipe_url: string | null;
-};
-
-export type UpdateRecipeData = CreateRecipeData;
+import { Recipe } from '../models/Recipe';
+import { RecipeId } from '../models/RecipeId';
 
 export interface IRecipeRepository {
   findAll(): Promise<Recipe[]>;
-  findById(id: string): Promise<Recipe | null>;
-  create(data: CreateRecipeData): Promise<Recipe>;
-  update(id: string, data: UpdateRecipeData): Promise<Recipe>;
-  delete(id: string): Promise<void>;
+  findById(id: RecipeId): Promise<Recipe | null>;
+  create(recipe: Recipe): Promise<Recipe>;
+  update(recipe: Recipe): Promise<Recipe>;
+  delete(id: RecipeId): Promise<void>;
+  subscribe(onRecipeChange: () => void): () => void;
 }

@@ -1,39 +1,43 @@
 import { useState, useEffect } from 'react';
 import { Plus, ChefHat } from 'lucide-react';
-import { supabase, Recipe } from './lib/supabase';
+import { supabase } from './lib/supabase';
 import { RecipeCard } from './components/RecipeCard';
 import { RecipeForm } from './components/RecipeForm';
 import { IngredientSearch } from './components/IngredientSearch';
-import { filterRecipesByIngredients } from './lib/search';
 import { SupabaseRecipeRepository } from './infrastructure/repositories/SupabaseRecipeRepository';
+import { GetAllRecipesUseCase } from './application/usecases/GetAllRecipesUseCase';
+import { CreateRecipeUseCase } from './application/usecases/CreateRecipeUseCase';
+import { UpdateRecipeUseCase } from './application/usecases/UpdateRecipeUseCase';
+import { DeleteRecipeUseCase } from './application/usecases/DeleteRecipeUseCase';
+import { RecipeDto } from './application/dto/RecipeDto';
 
 function App() {
   const recipeRepository = new SupabaseRecipeRepository(supabase);
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const getAllRecipesUseCase = new GetAllRecipesUseCase(recipeRepository);
+  const createRecipeUseCase = new CreateRecipeUseCase(recipeRepository);
+  const updateRecipeUseCase = new UpdateRecipeUseCase(recipeRepository);
+  const deleteRecipeUseCase = new DeleteRecipeUseCase(recipeRepository);
+
+  const [recipes, setRecipes] = useState<RecipeDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingRecipe, setEditingRecipe] = useState<Recipe | undefined>();
+  const [editingRecipe, setEditingRecipe] = useState<RecipeDto | undefined>();
   const [ingredientSearch, setIngredientSearch] = useState('');
   const [searchMode, setSearchMode] = useState<'and' | 'or'>('or');
 
   useEffect(() => {
     fetchRecipes();
 
-    const channel = supabase
-      .channel('recipes-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, () => {
-        fetchRecipes();
-      })
-      .subscribe();
+    const unsubscribe = recipeRepository.subscribe(() => {
+      fetchRecipes();
+    });
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return unsubscribe;
   }, []);
 
   const fetchRecipes = async () => {
     try {
-      const data = await recipeRepository.findAll();
+      const data = await getAllRecipesUseCase.execute();
       setRecipes(data);
     } catch (error) {
       console.error('Error fetching recipes:', error);
@@ -49,12 +53,13 @@ function App() {
     recipe_url: string | null;
   }) => {
     try {
-      await recipeRepository.create(data);
+      await createRecipeUseCase.execute(data);
       await fetchRecipes();
       setShowForm(false);
     } catch (error) {
       console.error('Error creating recipe:', error);
-      alert('レシピの投稿に失敗しました。もう一度お試しください。');
+      const errorMessage = error instanceof Error ? error.message : 'レシピの投稿に失敗しました';
+      alert(errorMessage);
     }
   };
 
@@ -67,27 +72,29 @@ function App() {
     if (!editingRecipe) return;
 
     try {
-      await recipeRepository.update(editingRecipe.id, data);
+      await updateRecipeUseCase.execute(editingRecipe.id, data);
       await fetchRecipes();
       setEditingRecipe(undefined);
       setShowForm(false);
     } catch (error) {
       console.error('Error updating recipe:', error);
-      alert('レシピの更新に失敗しました。もう一度お試しください。');
+      const errorMessage = error instanceof Error ? error.message : 'レシピの更新に失敗しました';
+      alert(errorMessage);
     }
   };
 
   const handleDeleteRecipe = async (id: string) => {
     try {
-      await recipeRepository.delete(id);
+      await deleteRecipeUseCase.execute(id);
       await fetchRecipes();
     } catch (error) {
       console.error('Error deleting recipe:', error);
-      alert('レシピの削除に失敗しました。もう一度お試しください。');
+      const errorMessage = error instanceof Error ? error.message : 'レシピの削除に失敗しました';
+      alert(errorMessage);
     }
   };
 
-  const handleEdit = (recipe: Recipe) => {
+  const handleEdit = (recipe: RecipeDto) => {
     setEditingRecipe(recipe);
     setShowForm(true);
   };
@@ -97,13 +104,36 @@ function App() {
     setEditingRecipe(undefined);
   };
 
-  const filteredRecipes = ingredientSearch.trim()
-    ? filterRecipesByIngredients(
-        recipes,
-        ingredientSearch.split(/\s+/).filter((term) => term.length > 0),
-        searchMode
-      )
-    : recipes;
+  // 検索機能を同期的に実装
+  const getFilteredRecipes = () => {
+    if (!ingredientSearch.trim()) {
+      return recipes;
+    }
+
+    const searchTerms = ingredientSearch.split(/\s+/).filter((term) => term.length > 0);
+    const normalizeString = (str: string): string => {
+      return str
+        .toLowerCase()
+        .replace(/[ａ-ｚＡ-Ｚ０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xfee0))
+        .trim();
+    };
+
+    return recipes.filter((recipe) => {
+      const normalizedIngredients = recipe.ingredients.map((ing) => normalizeString(ing));
+
+      if (searchMode === 'and') {
+        return searchTerms.every((term) =>
+          normalizedIngredients.some((ing) => ing.includes(normalizeString(term)))
+        );
+      } else {
+        return searchTerms.some((term) =>
+          normalizedIngredients.some((ing) => ing.includes(normalizeString(term)))
+        );
+      }
+    });
+  };
+
+  const displayedRecipes = getFilteredRecipes();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
@@ -153,7 +183,7 @@ function App() {
               レシピを投稿
             </button>
           </div>
-        ) : filteredRecipes.length === 0 ? (
+        ) : displayedRecipes.length === 0 ? (
           <div className="text-center py-20">
             <ChefHat className="mx-auto text-gray-400 mb-4" size={64} />
             <p className="text-xl text-gray-600 mb-4">その材料で作れるレシピはまだありません</p>
@@ -168,7 +198,7 @@ function App() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredRecipes.map((recipe) => (
+            {displayedRecipes.map((recipe) => (
               <RecipeCard
                 key={recipe.id}
                 recipe={recipe}
