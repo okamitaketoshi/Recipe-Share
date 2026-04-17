@@ -33,6 +33,9 @@ description: |
 ### Step 1: 現在の状態確認
 
 ```bash
+# 現在のディレクトリ確認（Worktree使用時に重要）
+pwd
+
 # 現在のブランチ確認
 git branch --show-current
 
@@ -42,6 +45,42 @@ git status
 # 変更差分確認（コミットメッセージ生成に使用）
 git diff --cached
 git diff
+```
+
+**🔴 Worktree使用時の必須検証：**
+
+Worktreeを使用している場合（`wt-issue-*`ディレクトリで作業している場合）、以下を確認：
+
+```bash
+# 1. 現在地がworktreeディレクトリか確認
+pwd
+
+# 期待される出力例:
+# /Users/user/project/wt-issue-XX-name
+
+# 2. 正しいブランチにいるか確認
+git branch --show-current
+
+# 期待される出力例:
+# feature/issue-XX-name（developではない！）
+```
+
+**検証チェックリスト：**
+- [ ] `pwd`でworktreeディレクトリにいる（または通常のプロジェクトルート）
+- [ ] `git branch --show-current`でdevelopブランチ**以外**にいる
+- [ ] ❌ developブランチでコミット作成は禁止
+
+**developブランチにいる場合：**
+```
+🚨 重大エラー: developブランチでコミット作成しようとしています！
+
+developブランチでの直接コミットは禁止されています。
+
+対処方法:
+1. 即座にコミット作成を中断
+2. 適切なfeature/bugfix/choreブランチに切り替え
+3. または新しいブランチを作成
+4. Worktree使用時は、worktreeディレクトリに移動しているか確認
 ```
 
 ### Step 2: ブランチの適切性判断と作成

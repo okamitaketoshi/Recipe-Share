@@ -17,15 +17,46 @@ description: |
 ### Step 1: 現在の状態確認
 
 ```bash
+# 現在のディレクトリ確認（Worktree使用時に重要）
+pwd
+
 # 現在のブランチ確認
 git branch --show-current
 
-# mainブランチにいる場合はエラー
-# PR作成はfeature/fix/chore等のブランチから行う
+# mainブランチまたはdevelopブランチにいる場合はエラー
+# PR作成はfeature/bugfix/chore等のブランチから行う
 ```
 
-**mainブランチにいる場合：**
-ユーザーに「mainブランチからはPRを作成できません。feature/fix/chore等のブランチに切り替えてください」と伝えて終了。
+**🔴 必須検証：**
+
+PR作成前に以下を確認：
+
+```bash
+# 1. 現在のブランチを確認
+git branch --show-current
+
+# 期待される出力例:
+# feature/issue-XX-name または bugfix/issue-XX-name
+```
+
+**検証チェックリスト：**
+- [ ] `git branch --show-current`でfeature/bugfix/chore等のブランチにいる
+- [ ] ❌ mainブランチにいない
+- [ ] ❌ developブランチにいない
+
+**mainブランチまたはdevelopブランチにいる場合：**
+```
+🚨 エラー: mainまたはdevelopブランチからはPRを作成できません
+
+現在のブランチ: [ブランチ名]
+
+対処方法:
+1. feature/bugfix/chore等のブランチに切り替える
+2. または新しいブランチを作成
+3. Worktree使用時は、worktreeディレクトリに移動しているか確認
+```
+
+ユーザーに上記メッセージを伝えて終了。
 
 ### Step 2: 変更内容の確認
 
