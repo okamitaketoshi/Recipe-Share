@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
-import { RecipeRepository } from '../../domain/repositories/RecipeRepository';
+import { IRecipeRepository } from '../../domain/repositories/IRecipeRepository';
 import { SupabaseRecipeRepository } from '../../infrastructure/repositories/SupabaseRecipeRepository';
 import { GetAllRecipesUseCase } from '../../application/usecases/GetAllRecipesUseCase';
 import { CreateRecipeUseCase } from '../../application/usecases/CreateRecipeUseCase';
@@ -12,7 +12,7 @@ import { DeleteRecipeUseCase } from '../../application/usecases/DeleteRecipeUseC
  * DIコンテナとして、リポジトリと全てのユースケースを提供
  */
 export interface RecipeContextValue {
-  recipeRepository: RecipeRepository;
+  recipeRepository: IRecipeRepository;
   getAllRecipesUseCase: GetAllRecipesUseCase;
   createRecipeUseCase: CreateRecipeUseCase;
   updateRecipeUseCase: UpdateRecipeUseCase;
@@ -74,7 +74,13 @@ export function RecipeProvider({ children }: RecipeProviderProps): JSX.Element {
       updateRecipeUseCase,
       deleteRecipeUseCase,
     }),
-    [recipeRepository, getAllRecipesUseCase, createRecipeUseCase, updateRecipeUseCase, deleteRecipeUseCase]
+    [
+      recipeRepository,
+      getAllRecipesUseCase,
+      createRecipeUseCase,
+      updateRecipeUseCase,
+      deleteRecipeUseCase,
+    ]
   );
 
   return <RecipeContext.Provider value={value}>{children}</RecipeContext.Provider>;
