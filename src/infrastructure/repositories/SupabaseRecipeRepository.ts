@@ -91,11 +91,7 @@ export class SupabaseRecipeRepository implements IRecipeRepository {
       id: recipe.getId().getValue(),
       title: recipe.getTitle(),
       ingredients: recipe.getIngredients().map((i) => i.getValue()),
-      steps_array: recipe.getSteps().map((s) => s.getDescription()),
-      steps: recipe
-        .getSteps()
-        .map((s) => s.getDescription())
-        .join('\n'),
+      steps_array: recipe.getSteps().map((s) => s.getDescription()), // stepsカラム削除に伴い、steps_arrayのみ使用
       recipe_url: recipe.getRecipeUrl(),
     };
   }

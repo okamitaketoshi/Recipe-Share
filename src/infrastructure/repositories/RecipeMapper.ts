@@ -37,8 +37,7 @@ export class RecipeMapper {
     return {
       title: recipe.getTitle(),
       ingredients,
-      steps_array: steps,
-      steps: steps.join('\n'),
+      steps_array: steps, // stepsカラム削除に伴い、steps_arrayのみ使用
       recipe_url: recipe.getRecipeUrl(),
     };
   }
