@@ -1,9 +1,8 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { RecipeDTO } from '../dto/RecipeDTO';
+import { RecipeRow } from '../supabase/schema';
+import { RecipeMapper } from '../mappers/RecipeMapper';
 import { Recipe } from '../../domain/models/Recipe';
 import { RecipeId } from '../../domain/models/RecipeId';
-import { Ingredient } from '../../domain/models/Ingredient';
-import { CookingStep } from '../../domain/models/CookingStep';
 import { IRecipeRepository } from '../../domain/repositories/IRecipeRepository';
 
 export class SupabaseRecipeRepository implements IRecipeRepository {
@@ -16,7 +15,7 @@ export class SupabaseRecipeRepository implements IRecipeRepository {
       .order('created_at', { ascending: false });
 
     if (error) throw new Error(error.message);
-    return (data || []).map((item) => this.toDomainModel(item as RecipeDTO));
+    return (data || []).map((item) => RecipeMapper.toDomain(item as RecipeRow));
   }
 
   async findById(id: RecipeId): Promise<Recipe | null> {
@@ -30,19 +29,22 @@ export class SupabaseRecipeRepository implements IRecipeRepository {
       if (error.code === 'PGRST116') return null; // Not found
       throw new Error(error.message);
     }
-    return this.toDomainModel(data as RecipeDTO);
+    return RecipeMapper.toDomain(data as RecipeRow);
   }
 
   async create(recipe: Recipe): Promise<Recipe> {
-    const dbData = this.toDatabase(recipe);
+    const dbData = {
+      id: recipe.getId().getValue(),
+      ...RecipeMapper.toRow(recipe),
+    };
     const { data, error } = await this.supabase.from('recipes').insert([dbData]).select().single();
 
     if (error) throw new Error(error.message);
-    return this.toDomainModel(data as RecipeDTO);
+    return RecipeMapper.toDomain(data as RecipeRow);
   }
 
   async update(recipe: Recipe): Promise<Recipe> {
-    const dbData = this.toDatabase(recipe);
+    const dbData = RecipeMapper.toRow(recipe);
     const { data, error } = await this.supabase
       .from('recipes')
       .update(dbData)
@@ -51,7 +53,7 @@ export class SupabaseRecipeRepository implements IRecipeRepository {
       .single();
 
     if (error) throw new Error(error.message);
-    return this.toDomainModel(data as RecipeDTO);
+    return RecipeMapper.toDomain(data as RecipeRow);
   }
 
   async delete(id: RecipeId): Promise<void> {
@@ -70,29 +72,6 @@ export class SupabaseRecipeRepository implements IRecipeRepository {
 
     return () => {
       this.supabase.removeChannel(channel);
-    };
-  }
-
-  // データベース型 → ドメインモデル変換
-  private toDomainModel(data: RecipeDTO): Recipe {
-    return Recipe.reconstruct(
-      RecipeId.create(data.id),
-      data.title,
-      data.ingredients.map((i) => Ingredient.create(i)),
-      data.steps_array.map((s, idx) => CookingStep.create(idx + 1, s)),
-      data.recipe_url,
-      new Date(data.created_at)
-    );
-  }
-
-  // ドメインモデル → データベース型変換
-  private toDatabase(recipe: Recipe): Omit<RecipeDTO, 'created_at'> {
-    return {
-      id: recipe.getId().getValue(),
-      title: recipe.getTitle(),
-      ingredients: recipe.getIngredients().map((i) => i.getValue()),
-      steps_array: recipe.getSteps().map((s) => s.getDescription()), // stepsカラム削除に伴い、steps_arrayのみ使用
-      recipe_url: recipe.getRecipeUrl(),
     };
   }
 }
