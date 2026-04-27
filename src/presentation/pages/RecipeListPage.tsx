@@ -1,7 +1,7 @@
 import { Plus, ChefHat } from 'lucide-react';
-import { RecipeCard } from '../../components/RecipeCard';
-import { RecipeForm } from '../../components/RecipeForm';
-import { IngredientSearch } from '../../components/IngredientSearch';
+import { RecipeCard } from '../components/RecipeCard';
+import { RecipeForm } from '../components/RecipeForm';
+import { IngredientSearch } from '../components/IngredientSearch';
 import { CreateRecipeRequest } from '../../application/dto/CreateRecipeRequest';
 import { useRecipes } from '../hooks/useRecipes';
 import { useRecipeSearch } from '../hooks/useRecipeSearch';

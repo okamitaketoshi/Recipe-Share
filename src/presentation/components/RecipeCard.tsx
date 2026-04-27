@@ -1,5 +1,5 @@
 import { CreditCard as Edit2, Trash2, ExternalLink } from 'lucide-react';
-import { RecipeDto } from '../application/dto/RecipeDto';
+import { RecipeDto } from '../../application/dto/RecipeDto';
 
 interface RecipeCardProps {
   recipe: RecipeDto;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
-import { RecipeDto } from '../application/dto/RecipeDto';
+import { RecipeDto } from '../../application/dto/RecipeDto';
 
 interface RecipeFormProps {
   recipe?: RecipeDto;
